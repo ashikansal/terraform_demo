@@ -1,32 +1,28 @@
-resource "azurerm_virtual_machine" "test_vm" {
-  name = "${var.prefix}-vm"
-  location = var.location
+resource "azurerm_linux_virtual_machine" "test_vm" {
+  name                = "${var.prefix}-vm"
   resource_group_name = var.resource_group_name
-  network_interface_ids = [azurerm_network_interface.test_nic.id]
-  vm_size = var.vm_size
+  location            = var.location
+  size                = var.vm_size
+  admin_username      = "testadmin"
+  network_interface_ids = [
+    azurerm_network_interface.test_nic.id,
+  ]
 
-  delete_os_disk_on_termination = true
+  admin_password = var.vm_password
+  disable_password_authentication = false
 
-  storage_image_reference {
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
     publisher = "Canonical"
-    offer = "UbuntuServer"
-    sku = "16.04-LTS"
-    version = "latest"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
   }
-  storage_os_disk {
-    name = "myosdisk1"
-    caching = "ReadWrite"
-    create_option = "FromImage"
-    managed_disk_type = "Standard_LRS"
-  }
-  os_profile {
-    computer_name = "hostname"
-    admin_username = "testadmin"
-    admin_password = var.vm_password
-  }
-  os_profile_linux_config {
-    disable_password_authentication = false
-  }
+
   identity {
     type = "SystemAssigned"
   }

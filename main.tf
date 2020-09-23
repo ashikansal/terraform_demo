@@ -15,7 +15,7 @@ resource "azurerm_key_vault_access_policy" "kv_access_policy" {
 
 module "virtual_machine" {
   source = "./modules/virtual_machine"
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.test-rg.name
   prefix = var.prefix
   vnet_address_space = var.vnet_address_space
   subnet_address_prefixes = var.subnet_address_prefixes
